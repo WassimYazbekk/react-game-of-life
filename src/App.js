@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import { getGen, initGen } from "./next-gen";
 
 function App() {
+  const [currentGen, setCurrentGen] = useState(
+    initGen(Array.from({ length: 128 }, () => Array(128).fill(false))),
+  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentGen((prev) => {
+        return getGen(prev);
+      });
+      console.log(currentGen);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1 className="title">Game Of Life</h1>
+      <div className="grid">
+        {currentGen.map((row) => {
+          return (
+            <div>
+              {row.map((cell) => {
+                return <div className={`cell ${cell && "alive"}`}></div>;
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
